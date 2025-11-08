@@ -1,1 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-m">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Locked</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Use Inter font family -->
+    <style>
+        html {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom styles for the countdown numbers for a consistent width */
+        .timer-segment span {
+            font-variant-numeric: tabular-nums;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white h-full flex items-center justify-center p-6">
 
+    <div class="w-full max-w-2xl mx-auto bg-gray-800 rounded-2xl shadow-2xl p-8 md:p-12 text-center">
+        
+        <!-- Header -->
+        <h1 class="text-3xl md:text-5xl font-bold text-white mb-4">Content Unlocking Soon</h1>
+        <p class="text-lg md:text-xl text-gray-300 mb-8">
+            Access to the file will be granted on November 10, 2025, at 09:00 AM.
+        </p>
+
+        <!-- Countdown Timer -->
+        <div id="countdown-timer" class="flex justify-center space-x-4 md:space-x-8 my-10">
+            <!-- Days -->
+            <div class="timer-segment flex flex-col items-center">
+                <span id="days" class="text-4xl md:text-7xl font-bold text-blue-400">00</span>
+                <span class="text-sm text-gray-400 mt-2">Days</span>
+            </div>
+            <!-- Hours -->
+            <div class="timer-segment flex flex-col items-center">
+                <span id="hours" class="text-4xl md:text-7xl font-bold text-blue-400">00</span>
+                <span class="text-sm text-gray-400 mt-2">Hours</span>
+            </div>
+            <!-- Minutes -->
+            <div class="timer-segment flex flex-col items-center">
+                <span id="minutes" class="text-4xl md:text-7xl font-bold text-blue-400">00</span>
+                <span class="text-sm text-gray-400 mt-2">Minutes</span>
+            </div>
+            <!-- Seconds -->
+            <div class="timer-segment flex flex-col items-center">
+                <span id="seconds" class="text-4xl md:text-7xl font-bold text-blue-400">00</span>
+                <span class="text-sm text-gray-400 mt-2">Seconds</span>
+            </div>
+        </div>
+
+        <!-- Link/Button Area -->
+        <div id="link-container" class="mt-12">
+            <!-- This is an <a> tag styled as a button. 
+                 It will be updated by the script. -->
+            <a id="content-link" 
+               href="#" 
+               target="_blank" 
+               rel="noopener noreferrer"
+               class="inline-flex items-center justify-center px-8 py-4 w-full md:w-auto
+                      font-semibold text-lg rounded-lg 
+                      transition-all duration-300 ease-in-out
+                      focus:outline-none focus:ring-4 focus:ring-blue-500/50"
+               aria-disabled="true">
+                <!-- SVG Lock Icon -->
+                <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                Locked
+            </a>
+        </div>
+
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+
+        // Set the target unlock date and time (ISO 8601 format: YYYY-MM-DDTHH:MM:SS)
+        // This will be interpreted in the user's local timezone.
+        const unlockTime = "2025-11-10T09:00:00";
+        const targetDate = new Date(unlockTime).getTime();
+
+        // The link to unlock
+        const lockedLink = "https://drive.google.com/drive/folders/1CK36VnOz8CXUo4EeZSJhABtYSSttMHr_?usp=sharing";
+
+        // --- END CONFIGURATION ---
+
+        // Get DOM elements
+        const daysEl = document.getElementById('days');
+        const hoursEl = document.getElementById('hours');
+        const minutesEl = document.getElementById('minutes');
+        const secondsEl = document.getElementById('seconds');
+        const linkButton = document.getElementById('content-link');
+        const linkContainer = document.getElementById('link-container');
+
+        // Set initial button state to "locked"
+        function setLockedState() {
+            linkButton.classList.add('bg-gray-600', 'text-gray-400', 'cursor-not-allowed');
+            linkButton.classList.remove('bg-blue-600', 'text-white', 'hover:bg-blue-700', 'animate-pulse');
+            linkButton.setAttribute('aria-disabled', 'true');
+            linkButton.querySelector('span')
+        }
+
+        // Set button state to "unlocked"
+        function setUnlockedState() {
+            linkButton.href = lockedLink;
+            linkButton.setAttribute('aria-disabled', 'false');
+            linkButton.classList.remove('bg-gray-600', 'text-gray-400', 'cursor-not-allowed');
+            linkButton.classList.add('bg-blue-600', 'text-white', 'hover:bg-blue-700');
+            linkButton.innerHTML = `
+                <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0v4m-4 4v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"></path></svg>
+                Access Content
+            `;
+            
+            // Add a subtle pulse animation to draw attention
+            linkContainer.classList.add('animate-pulse');
+        }
+
+        // Pad numbers with a leading zero if they are less than 10
+        function pad(num) {
+            return num < 10 ? '0' + num : num;
+        }
+
+        // Main countdown function
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const timeRemaining = targetDate - now;
+
+            if (timeRemaining <= 0) {
+                // Timer has finished
+                clearInterval(timerInterval);
+                daysEl.textContent = '00';
+                hoursEl.textContent = '00';
+                minutesEl.textContent = '00';
+                secondsEl.textContent = '00';
+                setUnlockedState();
+            } else {
+                // Timer is still running
+                const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+
+                // Update the DOM
+                daysEl.textContent = pad(days);
+                hoursEl.textContent = pad(hours);
+                minutesEl.textContent = pad(minutes);
+                secondsEl.textContent = pad(seconds);
+            }
+        }
+
+        // Initialize the page
+        // Set the initial locked state styling
+        setLockedState();
+        
+        // Run the countdown function once immediately to avoid a delay
+        updateCountdown();
+        
+        // Set an interval to update the countdown every second
+        const timerInterval = setInterval(updateCountdown, 1000);
+
+    </script>
+</body>
+</html>
